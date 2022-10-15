@@ -53,7 +53,7 @@ window.addEventListener("load", () => {
       this.width = width
       this.height = height
       this.particlesArray = []
-      this.image = document.getElementById("photo")
+      this.image = new Image()
       this.gap = 5
       this.mouse = {
         radius: 6000,
@@ -64,7 +64,27 @@ window.addEventListener("load", () => {
         this.mouse.x = e.x
         this.mouse.y = e.y
       })
-      this.init(ctx)
+      window.addEventListener("mouseleave", (e) => {
+        this.mouse.x = undefined
+        this.mouse.y = undefined
+      })
+      window.addEventListener("touchmove", (e) => {
+        this.mouse.x = e.pageX
+        this.mouse.y = e.pageY
+        e.preventDefault()
+      })
+      window.addEventListener("touchend", (e) => {
+        this.mouse.x = undefined
+        this.mouse.y = undefined
+      })
+      // this.init(ctx)
+      this.image.onload = () => {
+        this.init(ctx)
+      }
+    }
+    loadImage(base) {
+      this.image.src = base
+      ctx.clearRect(0, 0, this.width, this.height)
     }
     init(context) {
       context.drawImage(
@@ -74,6 +94,7 @@ window.addEventListener("load", () => {
       )
       const { data } = context.getImageData(0, 0, this.width, this.height)
       if (!data) return
+      this.particlesArray = []
       for (let y = 0; y < this.height; y += this.gap) {
         for (let x = 0; x < this.width; x += this.gap) {
           const index = (y * this.width + x) * 4
@@ -116,5 +137,17 @@ window.addEventListener("load", () => {
   const warpButton = document.getElementById("warpButton")
   warpButton.addEventListener("click", () => {
     effect.warp()
+    effect.mouse.x = undefined
+    effect.mouse.y = undefined
+  })
+
+  const loader = document.getElementById("loadFile")
+  const fileReader = new FileReader()
+  fileReader.onloadend = (e) => {
+    effect.loadImage(fileReader.result)
+  }
+  loader.addEventListener("change", (e) => {
+    const { files } = e.target
+    fileReader.readAsDataURL(files[0])
   })
 })

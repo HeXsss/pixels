@@ -6,6 +6,10 @@
   font-family: "Bangers", cursive;
 }
 
+body {
+  position: fixed;
+}
+
 #Screen {
   position: absolute;
 }
