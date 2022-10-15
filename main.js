@@ -91,12 +91,19 @@ window.addEventListener("load", () => {
           this.updatePixels()
         }
       })
+      // Radius adjuster
+      this.radiusAdjuster = document.getElementById("radiusValue")
+      this.radiusAdjuster.addEventListener("input", (e) => {
+        this.mouse.radius = e.target.value
+      })
     }
     loadImage(base) {
       ctx.clearRect(0, 0, this.width, this.height)
       this.image.src = base
       this.gapAdjuster.value = 5
       this.gap = 5
+      this.mouse.radius = 3000
+      this.radiusAdjuster.value = 3000
     }
     updatePixels() {
       this.particlesArray = []
