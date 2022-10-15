@@ -55,6 +55,7 @@ window.addEventListener("load", () => {
       this.particlesArray = []
       this.image = new Image()
       this.gap = 5
+      this.imageData = null
       this.mouse = {
         radius: 6000,
         x: undefined,
@@ -81,10 +82,39 @@ window.addEventListener("load", () => {
       this.image.onload = () => {
         this.init(ctx)
       }
+      // Gap adjuster
+      this.gapAdjuster = document.getElementById("gapAmount")
+      this.gapAdjuster.addEventListener("input", (e) => {
+        const value = e.target.value
+        this.gap = Number(value)
+        if (this.imageData) {
+          this.updatePixels()
+        }
+      })
     }
     loadImage(base) {
-      this.image.src = base
       ctx.clearRect(0, 0, this.width, this.height)
+      this.image.src = base
+      this.gapAdjuster.value = 5
+      this.gap = 5
+    }
+    updatePixels() {
+      this.particlesArray = []
+      for (let y = 0; y < this.height; y += this.gap) {
+        for (let x = 0; x < this.width; x += this.gap) {
+          const index = (y * this.width + x) * 4
+          const { r, g, b, a } = {
+            r: this.imageData[index],
+            g: this.imageData[index + 1],
+            b: this.imageData[index + 2],
+            a: this.imageData[index + 3]
+          }
+          if (a > 0) {
+            const color = `rgba(${r},${g},${b},${a})`
+            this.particlesArray.push(new Particle(this, x, y, color))
+          }
+        }
+      }
     }
     init(context) {
       context.drawImage(
@@ -93,23 +123,9 @@ window.addEventListener("load", () => {
         this.height / 2 - this.image.height / 2
       )
       const { data } = context.getImageData(0, 0, this.width, this.height)
+      this.imageData = data
       if (!data) return
-      this.particlesArray = []
-      for (let y = 0; y < this.height; y += this.gap) {
-        for (let x = 0; x < this.width; x += this.gap) {
-          const index = (y * this.width + x) * 4
-          const { r, g, b, a } = {
-            r: data[index],
-            g: data[index + 1],
-            b: data[index + 2],
-            a: data[index + 3]
-          }
-          if (a > 0) {
-            const color = `rgba(${r},${g},${b},${a})`
-            this.particlesArray.push(new Particle(this, x, y, color))
-          }
-        }
-      }
+      this.updatePixels()
     }
     draw(context) {
       this.particlesArray.forEach((particle) => particle.draw(context))
