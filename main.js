@@ -124,23 +124,33 @@ window.addEventListener("load", () => {
     }
     init(context) {
       // get the top left position of the image
-      const scaleWidth = this.image.width / this.image.height
-      const scaleHeight = this.image.height / this.image.width
-      if (this.height * scaleWidth <= this.width) {
-        context.drawImage(
-          this.image,
-          this.width / 2 - (this.height * scaleWidth) / 2,
-          0,
-          this.height * scaleWidth,
-          this.height
-        )
+      if (this.image.width > this.width || this.image.height > this.height) {
+        const scaleWidth = this.image.width / this.image.height
+        const scaleHeight = this.image.height / this.image.width
+        if (this.height * scaleWidth <= this.width) {
+          context.drawImage(
+            this.image,
+            this.width / 2 - (this.height * scaleWidth) / 2,
+            0,
+            this.height * scaleWidth,
+            this.height
+          )
+        } else {
+          context.drawImage(
+            this.image,
+            0,
+            this.height / 2 - (this.width * scaleHeight) / 2,
+            this.width,
+            this.width * scaleHeight
+          )
+        }
       } else {
         context.drawImage(
           this.image,
-          0,
-          this.height / 2 - (this.width * scaleHeight) / 2,
-          this.width,
-          this.width * scaleHeight
+          this.width / 2 - this.image.width / 2,
+          this.height / 2 - this.image.height / 2,
+          this.image.width,
+          this.image.height
         )
       }
 
