@@ -62,8 +62,8 @@ window.addEventListener("load", () => {
         y: undefined
       }
       window.addEventListener("mousemove", (e) => {
-        this.mouse.x = e.x
-        this.mouse.y = e.y
+        this.mouse.x = e.pageX
+        this.mouse.y = e.pageY
       })
       window.addEventListener("mouseleave", (e) => {
         this.mouse.x = undefined
@@ -72,7 +72,6 @@ window.addEventListener("load", () => {
       window.addEventListener("touchmove", (e) => {
         this.mouse.x = e.pageX
         this.mouse.y = e.pageY
-        e.preventDefault()
       })
       window.addEventListener("touchend", (e) => {
         this.mouse.x = undefined
@@ -124,11 +123,27 @@ window.addEventListener("load", () => {
       }
     }
     init(context) {
-      context.drawImage(
-        this.image,
-        this.width / 2 - this.image.width / 2,
-        this.height / 2 - this.image.height / 2
-      )
+      // get the top left position of the image
+      const scaleWidth = this.image.width / this.image.height
+      const scaleHeight = this.image.height / this.image.width
+      if (this.height * scaleWidth <= this.width) {
+        context.drawImage(
+          this.image,
+          this.width / 2 - (this.height * scaleWidth) / 2,
+          0,
+          this.height * scaleWidth,
+          this.height
+        )
+      } else {
+        context.drawImage(
+          this.image,
+          0,
+          this.height / 2 - (this.width * scaleHeight) / 2,
+          this.width,
+          this.width * scaleHeight
+        )
+      }
+
       const { data } = context.getImageData(0, 0, this.width, this.height)
       this.imageData = data
       if (!data) return
